@@ -98,6 +98,37 @@ function DownloadClientOptions(props) {
                 </FormGroup>
               </Form>
             </FieldSet>
+
+            <FieldSet legend="Drone Factory Options">
+              <Form>
+                <FormGroup size={sizes.MEDIUM}>
+                  <FormLabel>Drone Factory Directory</FormLabel>
+
+                  <FormInputGroup
+                    type={inputTypes.PATH}
+                    name="downloadedAlbumsFolder"
+                    helpText="Optional folder to periodically scan for possible imports."
+                    onChange={onInputChange}
+                    {...settings.downloadedAlbumsFolder}
+                  />
+                </FormGroup>
+
+                <FormGroup size={sizes.MEDIUM}>
+                  <FormLabel>Drone Factory Interval</FormLabel>
+
+                  <FormInputGroup
+                    type={inputTypes.NUMBER}
+                    name="downloadedAlbumsScanInterval"
+                    min={0}
+                    max={120}
+                    unit="minutes"
+                    helpText="Interval in minutes. Set to zero to disable"
+                    onChange={onInputChange}
+                    {...settings.downloadedAlbumsScanInterval}
+                  />
+                </FormGroup>
+              </Form>
+            </FieldSet>
           </div>
       }
     </div>

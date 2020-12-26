@@ -1,3 +1,4 @@
+using NzbDrone.Common.Disk;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Configuration.Events;
 using NzbDrone.Core.Download;
@@ -19,9 +20,10 @@ namespace NzbDrone.Core.HealthCheck.Checks
 
         public override HealthCheck Check()
         {
-            if (!_configService.EnableCompletedDownloadHandling)
+            var droneFactoryFolder = new OsPath(_configService.DownloadedAlbumsFolder);
+            if (!_configService.EnableCompletedDownloadHandling && droneFactoryFolder.IsEmpty)
             {
-                return new HealthCheck(GetType(), HealthCheckResult.Warning, "Enable Completed Download Handling");
+                return new HealthCheck(GetType(), HealthCheckResult.Warning, "Enable Completed Download Handling or configure Drone Factory");
             }
 
             return new HealthCheck(GetType());

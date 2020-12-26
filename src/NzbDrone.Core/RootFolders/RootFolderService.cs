@@ -7,6 +7,7 @@ using NLog;
 using NzbDrone.Common;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.Extensions;
+using NzbDrone.Core.Configuration;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.MediaFiles.Commands;
 using NzbDrone.Core.Messaging.Commands;
@@ -31,16 +32,19 @@ namespace NzbDrone.Core.RootFolders
         private readonly IRootFolderRepository _rootFolderRepository;
         private readonly IDiskProvider _diskProvider;
         private readonly IManageCommandQueue _commandQueueManager;
+        private readonly IConfigService _configService;
         private readonly Logger _logger;
 
         public RootFolderService(IRootFolderRepository rootFolderRepository,
                                  IDiskProvider diskProvider,
                                  IManageCommandQueue commandQueueManager,
+                                 IConfigService configService,
                                  Logger logger)
         {
             _rootFolderRepository = rootFolderRepository;
             _diskProvider = diskProvider;
             _commandQueueManager = commandQueueManager;
+            _configService = configService;
             _logger = logger;
         }
 
@@ -85,6 +89,11 @@ namespace NzbDrone.Core.RootFolders
             if (!_diskProvider.FolderExists(rootFolder.Path))
             {
                 throw new DirectoryNotFoundException("Can't add root directory that doesn't exist.");
+            }
+
+            if (_configService.DownloadedAlbumsFolder.IsNotNullOrWhiteSpace() && _configService.DownloadedAlbumsFolder.PathEquals(rootFolder.Path))
+            {
+                throw new InvalidOperationException("Drone Factory folder cannot be used.");
             }
 
             if (!_diskProvider.FolderWritable(rootFolder.Path))

@@ -1,11 +1,13 @@
-﻿using Lidarr.Http.REST;
+using Lidarr.Http.REST;
 using NzbDrone.Core.Configuration;
 
 namespace Lidarr.Api.V1.Config
 {
     public class DownloadClientConfigResource : RestResource
     {
+        public string DownloadedAlbumsFolder { get; set; }
         public string DownloadClientWorkingFolders { get; set; }
+        public int DownloadedAlbumsScanInterval { get; set; }
 
         public bool EnableCompletedDownloadHandling { get; set; }
         public bool RemoveCompletedDownloads { get; set; }
@@ -20,7 +22,9 @@ namespace Lidarr.Api.V1.Config
         {
             return new DownloadClientConfigResource
             {
+                DownloadedAlbumsFolder = model.DownloadedAlbumsFolder,
                 DownloadClientWorkingFolders = model.DownloadClientWorkingFolders,
+                DownloadedAlbumsScanInterval = model.DownloadedAlbumsScanInterval,
 
                 EnableCompletedDownloadHandling = model.EnableCompletedDownloadHandling,
                 RemoveCompletedDownloads = model.RemoveCompletedDownloads,

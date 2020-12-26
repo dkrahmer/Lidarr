@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using NzbDrone.Common.Disk;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Extensions;
+using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Download.TrackedDownloads;
 using NzbDrone.Core.History;
 using NzbDrone.Core.MediaFiles;
@@ -21,18 +23,21 @@ namespace NzbDrone.Core.Download
 
     public class CompletedDownloadService : ICompletedDownloadService
     {
+        private readonly IConfigService _configService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IHistoryService _historyService;
         private readonly IDownloadedTracksImportService _downloadedTracksImportService;
         private readonly IArtistService _artistService;
         private readonly ITrackedDownloadAlreadyImported _trackedDownloadAlreadyImported;
 
-        public CompletedDownloadService(IEventAggregator eventAggregator,
+        public CompletedDownloadService(IConfigService configService,
+                                        IEventAggregator eventAggregator,
                                         IHistoryService historyService,
                                         IDownloadedTracksImportService downloadedTracksImportService,
                                         IArtistService artistService,
                                         ITrackedDownloadAlreadyImported trackedDownloadAlreadyImported)
         {
+            _configService = configService;
             _eventAggregator = eventAggregator;
             _historyService = historyService;
             _downloadedTracksImportService = downloadedTracksImportService;
@@ -74,6 +79,14 @@ namespace NzbDrone.Core.Download
                 (OsInfo.IsNotWindows && !downloadItemOutputPath.IsUnixPath))
             {
                 trackedDownload.Warn("[{0}] is not a valid local path. You may need a Remote Path Mapping.", downloadItemOutputPath);
+                return;
+            }
+
+            var downloadedAlbumsFolder = new OsPath(_configService.DownloadedAlbumsFolder);
+
+            if (downloadedAlbumsFolder.Contains(downloadItemOutputPath))
+            {
+                trackedDownload.Warn("Intermediate Download path inside drone factory, Skipping.");
                 return;
             }
 
